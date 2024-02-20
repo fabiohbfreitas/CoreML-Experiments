@@ -24,6 +24,7 @@ jobs:
         run: |
           xcodebuild -project SentimentAnalysis/SentimentAnalysis.xcodeproj \
           -scheme SentimentAnalysis \
+          -configuration Debug \
           -sdk iphoneos \
           -allowProvisioningUpdates \
           build

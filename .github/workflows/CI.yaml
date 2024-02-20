@@ -19,7 +19,7 @@ jobs:
       - name: Setup XCode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: latest 
       - name: Build Project
         run: |
           xcodebuild -project SentimentAnalysis/SentimentAnalysis.xcodeproj \

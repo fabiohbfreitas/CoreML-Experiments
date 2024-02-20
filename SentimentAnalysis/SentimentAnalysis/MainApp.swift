@@ -14,12 +14,17 @@ struct MainApp: App {
             TabView {
                 SentimentAnalysisEn()
                     .tabItem { Label(
-                        title: { Text("Model 1") },
+                        title: { Text("Sentiment 1") },
                         icon: { Image(systemName: "doc.text.magnifyingglass") }
                     ) }
                 SentimentAnalysis2()
                     .tabItem { Label(
-                        title: { Text("Model 2") },
+                        title: { Text("Sentiment 2") },
+                        icon: { Image(systemName: "doc.text.magnifyingglass") }
+                    ) }
+                EmotionAnalysisView()
+                    .tabItem { Label(
+                        title: { Text("Emotion") },
                         icon: { Image(systemName: "doc.text.magnifyingglass") }
                     ) }
             }

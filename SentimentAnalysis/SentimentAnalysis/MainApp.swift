@@ -1,5 +1,5 @@
 //
-//  SentimentAnalysisApp.swift
+//  MainApp.swift
 //  SentimentAnalysis
 //
 //  Created by Fabio Freitas on 19/02/24.

@@ -1,12 +1,12 @@
 //
-//  EmotionAnalysis.swift
+//  EmotionAnalysisView.swift
 //  SentimentAnalysis
 //
 //  Created by Fabio Freitas on 20/02/24.
 //
 
-import SwiftUI
 import CoreML
+import SwiftUI
 
 struct EmotionAnalysisView: View {
     @State private var textInput = ""

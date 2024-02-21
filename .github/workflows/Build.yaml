@@ -23,6 +23,12 @@ jobs:
       - name: Install xpretty util command
         run: |
           gem install xcpretty
+      - name: Cache Derived Data
+        uses: actions/cache@v2
+        with:
+          path: |
+            build
+          key: ${{ runner.os }}-xcode-${{ hashFiles('**/Podfile.lock') }}
       - name: Build Project
         run: |
           xcodebuild build-for-testing \

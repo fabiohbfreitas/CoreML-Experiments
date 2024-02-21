@@ -18,6 +18,7 @@
 		E886E0B42B852E5900655F28 /* EmotionAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E886E0B32B852E5900655F28 /* EmotionAnalysisView.swift */; };
 		E8F48ACE2B866EF0007C1D28 /* EmotionsImageClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8F48ACD2B866EF0007C1D28 /* EmotionsImageClassifier.mlmodel */; };
 		E8F48AD02B866F7B007C1D28 /* EmotionImageClassificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F48ACF2B866F7B007C1D28 /* EmotionImageClassificationView.swift */; };
+		E8F48AD22B868548007C1D28 /* EmotionsImageClassifierAugmented.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = E8F48AD12B868547007C1D28 /* EmotionsImageClassifierAugmented.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		E886E0B32B852E5900655F28 /* EmotionAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionAnalysisView.swift; sourceTree = "<group>"; };
 		E8F48ACD2B866EF0007C1D28 /* EmotionsImageClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = EmotionsImageClassifier.mlmodel; path = ../EmotionsImageClassifier.mlmodel; sourceTree = "<group>"; };
 		E8F48ACF2B866F7B007C1D28 /* EmotionImageClassificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionImageClassificationView.swift; sourceTree = "<group>"; };
+		E8F48AD12B868547007C1D28 /* EmotionsImageClassifierAugmented.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = EmotionsImageClassifierAugmented.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +51,7 @@
 		E886E08D2B83E7F300655F28 = {
 			isa = PBXGroup;
 			children = (
+				E8F48AD12B868547007C1D28 /* EmotionsImageClassifierAugmented.mlmodel */,
 				E886E0B12B852E4500655F28 /* EmotionAnalisys.mlmodel */,
 				E886E0AF2B83EF0800655F28 /* SentimentAnalisys2.mlmodel */,
 				E886E0A92B83E91000655F28 /* SentimentAnalisys.mlmodel */,
@@ -162,6 +165,7 @@
 				E886E0AC2B83EA7300655F28 /* SentimentAnalysis2.swift in Sources */,
 				E886E09A2B83E7F300655F28 /* MainApp.swift in Sources */,
 				E886E0B42B852E5900655F28 /* EmotionAnalysisView.swift in Sources */,
+				E8F48AD22B868548007C1D28 /* EmotionsImageClassifierAugmented.mlmodel in Sources */,
 				E8F48AD02B866F7B007C1D28 /* EmotionImageClassificationView.swift in Sources */,
 				E886E0B02B83EF0800655F28 /* SentimentAnalisys2.mlmodel in Sources */,
 				E8F48ACE2B866EF0007C1D28 /* EmotionsImageClassifier.mlmodel in Sources */,

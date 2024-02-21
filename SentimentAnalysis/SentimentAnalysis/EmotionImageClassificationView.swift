@@ -10,7 +10,7 @@ import SwiftUI
 import UIKit
 import Vision
 
-enum HappyImages: String, Hashable, CaseIterable {
+enum ImageSample: String, Hashable, CaseIterable {
     case Happy1
     case Happy2
     case Happy3
@@ -71,14 +71,30 @@ enum HappyImages: String, Hashable, CaseIterable {
             "Image 10"
         }
     }
+
+    func randomExcludingCurrent() -> ImageSample {
+        let cases = ImageSample.allCases.filter { $0.rawValue != self.rawValue }
+        let index = Int.random(in: 0 ..< cases.count)
+        return cases[index]
+    }
 }
 
 struct EmotionImageClassificationView: View {
-    @State private var selectedImage: HappyImages = .Happy1
+    @State private var selectedImage: ImageSample = .Happy1
     @State private var result = ""
 
     var body: some View {
         VStack {
+            Picker("Select Image", selection: $selectedImage) {
+                ForEach(ImageSample.allCases, id: \.self) {
+                    Text($0.getLabel()).tag($0.getLabel())
+                }
+            }.onChange(of: selectedImage) { old, new in
+                if old.rawValue != new.rawValue {
+                    result = ""
+                }
+            }
+
             ZStack {
                 Image(selectedImage.getImage())
                     .resizable()
@@ -99,32 +115,30 @@ struct EmotionImageClassificationView: View {
                 }
             }
             .frame(maxHeight: 390)
-
-            Picker("Select Image", selection: $selectedImage) {
-                ForEach(HappyImages.allCases, id: \.self) {
-                    Text($0.getLabel()).tag($0.getLabel())
+            VStack(spacing: 20) {
+                Button("Random Image") {
+                    selectedImage = selectedImage.randomExcludingCurrent()
                 }
-            }.onChange(of: selectedImage) { _, _ in
-                result = ""
+                Button("Classify Image") {
+                    classifyImage()
+                }
+                .buttonStyle(.bordered)
             }
-            Button("Go") {
-                classifyImage()
-                print("tap")
-            }
-            .buttonStyle(.bordered)
+            .padding()
         }
     }
 
     private func classifyImage() {
         do {
-            let mlModel = try EmotionsImageClassifier(configuration: MLModelConfiguration())
+//            let mlModel = try EmotionsImageClassifier(configuration: MLModelConfiguration())
+            let mlModel = try EmotionsImageClassifierAugmented(configuration: MLModelConfiguration())
             let visionModel = try VNCoreMLModel(for: mlModel.model)
 
             let req = VNCoreMLRequest(model: visionModel, completionHandler: {
                 request, error in
                 processObservation(for: request, error: error)
             })
-            req.imageCropAndScaleOption = .scaleFit
+//            req.imageCropAndScaleOption = .scaleFit // This gives flaky results
 
             #if targetEnvironment(simulator)
                 req.usesCPUOnly = true

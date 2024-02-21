@@ -1,0 +1,1 @@
+[{"model":"EFF743C6-4C37-4E59-A67E-BED991BA781C","weights":{"strides":[1],"scalar":"double","shape":[3845],"index":0}},["anger","disgust","fear","happy","pain","sad"]]

@@ -50,7 +50,7 @@ struct EmotionAnalysisView: View {
             let input = EmotionAnalisysInput(text: textInput.trimmingCharacters(in: .whitespacesAndNewlines))
 
             let output = try sentimentAnalysis.prediction(input: input)
-            print(output.label)
+//            print(output.label)
             result = "Result: \(output.label)"
         } catch {
             print(error.localizedDescription)

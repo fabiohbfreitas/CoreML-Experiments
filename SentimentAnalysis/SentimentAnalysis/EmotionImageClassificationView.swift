@@ -21,6 +21,14 @@ enum ImageSample: String, Hashable, CaseIterable {
     case Angry1
     case Angry2
     case Angry3
+    case Angry4
+    case Angry5
+    case Angry6
+    case Angry7
+    case Fear1
+    case Fear2
+    case Fear3
+    
 
     func getImage() -> ImageResource {
         switch self {
@@ -44,6 +52,20 @@ enum ImageSample: String, Hashable, CaseIterable {
             .angry2
         case .Angry3:
             .angry3
+        case .Angry4:
+                .angry4
+        case .Angry5:
+                .angry5
+        case .Angry6:
+                .angry6
+        case .Angry7:
+                .angry7
+        case .Fear1:
+                .fear1
+        case .Fear2:
+                .fear2
+        case .Fear3:
+                .fear3
         }
     }
 
@@ -69,6 +91,20 @@ enum ImageSample: String, Hashable, CaseIterable {
             "Image 9"
         case .Angry3:
             "Image 10"
+        case .Angry4:
+            "Image 11"
+        case .Angry5:
+            "Image 12"
+        case .Angry6:
+            "Image 13"
+        case .Angry7:
+            "Image 14"
+        case .Fear1:
+            "Image 16"
+        case .Fear2:
+            "Image 17"
+        case .Fear3:
+            "Image 18"
         }
     }
 

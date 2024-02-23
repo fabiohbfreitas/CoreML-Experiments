@@ -59,7 +59,6 @@ extension CameraView {
 
         func captureOutput(_: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from _: AVCaptureConnection) {
             guard let _pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-            print(Date().timeIntervalSince1970)
         }
     }
 }

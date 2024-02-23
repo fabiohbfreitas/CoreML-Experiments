@@ -23,10 +23,17 @@ jobs:
       - name: Install xpretty util command
         run: |
           gem install xcpretty
-      - name: Build Project
+      - name: Build CoreML Project
         run: |
           xcodebuild build-for-testing \
           -project SentimentAnalysis/SentimentAnalysis.xcodeproj \
           -scheme SentimentAnalysis \
+          -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+          -derivedDataPath build | xcpretty
+      - name: Build Live Camera Project
+        run: |
+          xcodebuild build-for-testing \
+          -project CameraLiveCaptureTesting/CameraLiveCaptureTesting.xcodeproj \
+          -scheme CameraLiveCaptureTesting \
           -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
           -derivedDataPath build | xcpretty

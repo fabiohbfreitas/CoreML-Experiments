@@ -13,23 +13,44 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
-            GeometryReader { proxy in
-                CameraPreview(cameraViewModel: $cameraViewModel, frame: proxy.frame(in: .global))
-                    .onAppear {
-                        cameraViewModel.requestAccessAndSetup()
+            if !cameraViewModel.hasPreviewPhoto {
+                GeometryReader { proxy in
+                    CameraPreview(cameraViewModel: $cameraViewModel, frame: proxy.frame(in: .global))
+                        .onAppear {
+                            cameraViewModel.requestAccessAndSetup()
+                        }
+                }
+            } else {
+                if let image = cameraViewModel.previewOutput {
+                    VStack {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                        HStack {
+                            Button("Discard") {
+                                cameraViewModel.previewOutput = nil
+                            }
+                            .foregroundStyle(.red)
+                            .padding()
+                            
+                            Button("Save") {
+                                cameraViewModel.savePhoto()
+                            }
+                            .foregroundStyle(.green)
+                            .padding()
+                        }
                     }
+                }
             }
             VStack {
                 Spacer()
                 HStack(spacing: 25) {
-                    Button("test") {
-                        print("test 1")
+                    if cameraViewModel.previewOutput == nil {
+                        Button("take photo") {
+                            cameraViewModel.tapTakePhoto()
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
-                    .buttonStyle(.borderedProminent)
-                    Button("test2") {
-                        print("test 2")
-                    }
-                    .buttonStyle(.borderedProminent)
                 }
                 .padding(.bottom, 35)
             }

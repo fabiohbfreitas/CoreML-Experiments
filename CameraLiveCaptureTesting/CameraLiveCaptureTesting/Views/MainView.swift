@@ -18,7 +18,7 @@ struct MainView: View {
                 let rec = NLLanguageRecognizer()
                 defer { rec.reset() }
                 rec.processString(test)
-                print(rec.dominantLanguage?.rawValue ?? "<nope>")
+//                print(rec.dominantLanguage?.rawValue ?? "<nope>")
             }
     }
 }

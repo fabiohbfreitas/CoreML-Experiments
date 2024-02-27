@@ -58,7 +58,7 @@ extension CameraView {
         }
 
         func captureOutput(_: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from _: AVCaptureConnection) {
-            guard let _pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+            guard let _: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         }
     }
 }

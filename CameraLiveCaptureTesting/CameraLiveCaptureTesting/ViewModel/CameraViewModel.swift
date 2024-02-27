@@ -16,7 +16,7 @@ extension CameraView {
         var preview = AVCaptureVideoPreviewLayer()
 //        var output = AVCaptureVideoDataOutput()
         var photoOutput = AVCapturePhotoOutput()
-        
+
         var previewOutput: UIImage?
         var hasPreviewPhoto: Bool {
             previewOutput != nil
@@ -49,7 +49,7 @@ extension CameraView {
 //
 //                output.alwaysDiscardsLateVideoFrames = true
 //                output.setSampleBufferDelegate(self, queue: DispatchQueue.global(qos: .background))
-                
+
                 guard session.canAddOutput(photoOutput) else { return }
                 session.addOutput(photoOutput)
 
@@ -66,26 +66,23 @@ extension CameraView {
                 print(error.localizedDescription)
             }
         }
-        
+
         func tapDiscardPhoto() {
-            guard  previewOutput != nil else { return }
+            guard previewOutput != nil else { return }
             Task {
                 self.previewOutput = nil
             }
         }
-        
+
         func tapTakePhoto() {
             let photoSettings = AVCapturePhotoSettings()
             guard let photoPreviewType = photoSettings.availablePreviewPhotoPixelFormatTypes.first else { return }
             photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoPreviewType]
-            Task {
-                self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
-            }
+            photoOutput.capturePhoto(with: photoSettings, delegate: self)
         }
-        
+
         func savePhoto() {
             guard let previewOutput else { return }
-            
             PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] status in
                 if status == .authorized {
                     do {
@@ -99,15 +96,14 @@ extension CameraView {
                 }
             }
         }
-        
-        func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+
+        func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error _: Error?) {
             guard let imageData = photo.fileDataRepresentation() else { return }
-            self.previewOutput = UIImage(data: imageData)
+            previewOutput = UIImage(data: imageData)
         }
 
         func captureOutput(_: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from _: AVCaptureConnection) {
             guard let _: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         }
-        
     }
 }

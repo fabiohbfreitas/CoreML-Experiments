@@ -13,34 +13,36 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
-            if !cameraViewModel.hasPreviewPhoto {
-                GeometryReader { proxy in
-                    CameraPreview(cameraViewModel: $cameraViewModel, frame: proxy.frame(in: .global))
-                        .onAppear {
-                            cameraViewModel.requestAccessAndSetup()
-                        }
-                }
-            } else {
-                if let image = cameraViewModel.previewOutput {
-                    VStack {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                        HStack {
-                            Button("Discard") {
-                                cameraViewModel.previewOutput = nil
-                            }
-                            .foregroundStyle(.red)
-                            .padding()
-                            
-                            Button("Save") {
-                                cameraViewModel.savePhoto()
-                            }
-                            .foregroundStyle(.green)
-                            .padding()
-                        }
+            GeometryReader { proxy in
+                CameraPreview(cameraViewModel: $cameraViewModel, frame: proxy.frame(in: .global))
+                    .onAppear {
+                        cameraViewModel.requestAccessAndSetup()
                     }
+            }
+
+            if let image = cameraViewModel.previewOutput {
+                VStack {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaleEffect(0.85)
+                        .clipped()
+                        .cornerRadius(12)
+                        .padding(.top)
+                    HStack(spacing: 30) {
+                        Button("Discard") {
+                            cameraViewModel.previewOutput = nil
+                        }
+                        .foregroundStyle(.red)
+                        .padding()
+
+                        Button("Save") {
+                            cameraViewModel.savePhoto()
+                        }
+                        .foregroundStyle(.green)
+                    }
+                    .padding(.bottom, 40)
                 }
+                .background(.ultraThinMaterial)
             }
             VStack {
                 Spacer()

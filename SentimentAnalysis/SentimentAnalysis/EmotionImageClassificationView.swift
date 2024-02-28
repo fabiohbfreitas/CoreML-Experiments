@@ -155,7 +155,16 @@ struct EmotionImageClassificationView: View {
                     selectedImage = selectedImage.randomExcludingCurrent()
                 }
                 Button("Classify Image") {
-                    classifyImage()
+//                    classifyImage()
+                    do {
+                        let analysis = try ImageAnalysis(image: UIImage(resource: selectedImage.getImage()))
+                        try analysis.analyseImage { modelResult in
+                            result = modelResult.capitalized
+                        }
+                        
+                    } catch {
+                        print(error.localizedDescription)
+                    }
                 }
                 .buttonStyle(.bordered)
             }
@@ -208,4 +217,74 @@ struct EmotionImageClassificationView: View {
 
 #Preview {
     EmotionImageClassificationView()
+}
+
+enum ImageAnalysisError: Error {
+    case InvalidImage
+    case FailedToCreateModel
+    case FailedRequest
+    case FailureProcessingImage
+    case EmptyResult
+}
+
+class ImageAnalysis {
+    public let image: CGImage
+
+    private let visionModel: VNCoreMLModel
+    private let handler: VNImageRequestHandler
+
+    init(image: CGImage?) throws {
+        guard let image else { throw ImageAnalysisError.InvalidImage }
+        self.image = image
+        visionModel = try ImageAnalysis.prepareModel()
+        handler = VNImageRequestHandler(cgImage: image)
+    }
+
+    init(image: UIImage) throws {
+        guard let image = image.cgImage else { throw ImageAnalysisError.InvalidImage }
+        self.image = image
+        visionModel = try ImageAnalysis.prepareModel()
+        handler = VNImageRequestHandler(cgImage: image)
+    }
+
+    private static func prepareModel() throws -> VNCoreMLModel {
+        do {
+            let coreml = try EmotionsImageClassifierAugmented(configuration: MLModelConfiguration())
+            return try VNCoreMLModel(for: coreml.model)
+        } catch {
+            throw ImageAnalysisError.FailedToCreateModel
+        }
+    }
+
+    private func processResult(for req: VNRequest, error: Error?) throws -> String {
+        if let error {
+            print(error.localizedDescription)
+            throw ImageAnalysisError.FailureProcessingImage
+        }
+        guard let results = req.results as? [VNClassificationObservation] else { throw ImageAnalysisError.EmptyResult }
+        guard let result = results.first else { throw ImageAnalysisError.EmptyResult }
+        return result.identifier
+    }
+
+    public func analyseImage(_ resultCallback: @escaping (String) -> Void) throws {
+        var request = VNCoreMLRequest(model: visionModel) { [weak self] visionRequest, err in
+            guard let self = self else { return }
+            do {
+                let analysisResult = try processResult(for: visionRequest, error: err)
+                resultCallback(analysisResult)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        
+        #if targetEnvironment(simulator)
+        request.usesCPUOnly = true
+        #endif
+
+        do {
+            try handler.perform([request])
+        } catch {
+            throw ImageAnalysisError.FailureProcessingImage
+        }
+    }
 }

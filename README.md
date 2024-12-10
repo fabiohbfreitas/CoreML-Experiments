@@ -57,37 +57,53 @@ import SwiftUI
 import CoreML
 import Vision
 
-class ClassifierViewModel: ObservableObject {
-    @Published var predictedEmotion: String = "Unknown"
+enum ClassifierError: LocalizedError {
+    case modelLoadingFailed
+    case imageConversionFailed
+    case classificationFailed(Error)
+    case imageRequestFailed(Error)
     
+    var errorDescription: String? {
+        switch self {
+        case .modelLoadingFailed:
+            return "Failed to load the machine learning model."
+        case .imageConversionFailed:
+            return "Unable to convert UIImage to CIImage."
+        case .classificationFailed(let error):
+            return "Classification error: \(error.localizedDescription)"
+        case .imageRequestFailed(let error):
+            return "Failed to perform image request: \(error.localizedDescription)"
+        }
+    }
+}
+
+@Observable
+class ClassifierViewModel {
+    var predictedEmotion: String = "Unknown"  // Automatically observed state
+
     private var model: VNCoreMLModel?
 
     init() {
         // Load the CoreML model into a Vision model for better flexibility
-        do {
-            let mlModel = try EmotionsImageClassifier(configuration: MLModelConfiguration()).model
-            self.model = try VNCoreMLModel(for: mlModel)
-        } catch {
-            print("Failed to load ML model: \(error)")
+        if let mlModel = try? EmotionsImageClassifier(configuration: MLModelConfiguration()).model {
+            self.model = try? VNCoreMLModel(for: mlModel)
+        } else {
+            print(ClassifierError.modelLoadingFailed.localizedDescription)
         }
     }
 
     /// Classifies an image and updates the `predictedEmotion`
     func classifyImage(_ image: UIImage) {
-        guard let model = model else { return }
-        
-        guard let ciImage = CIImage(image: image) else {
-            print("Unable to convert UIImage to CIImage")
+        guard let model = model, let ciImage = CIImage(image: image) else {
+            print(ClassifierError.imageConversionFailed.localizedDescription)
             return
         }
 
         let request = VNCoreMLRequest(model: model) { [weak self] request, error in
             if let results = request.results as? [VNClassificationObservation], let topResult = results.first {
-                DispatchQueue.main.async {
-                    self?.predictedEmotion = topResult.identifier
-                }
+                self?.predictedEmotion = topResult.identifier
             } else if let error = error {
-                print("Classification error: \(error)")
+                print(ClassifierError.classificationFailed(error).localizedDescription)
             }
         }
 
@@ -95,10 +111,11 @@ class ClassifierViewModel: ObservableObject {
         do {
             try handler.perform([request])
         } catch {
-            print("Failed to perform image request: \(error)")
+            print(ClassifierError.imageRequestFailed(error).localizedDescription)
         }
     }
 }
+
 ```
 
 ## Text Classification ViewModel Example (Using `SentimentAnalysis.mlmodel`)
@@ -114,8 +131,23 @@ import SwiftUI
 import CoreML
 import NaturalLanguage
 
-class SentimentViewModel: ObservableObject {
-    @Published var predictedSentiment: String = "Unknown"
+enum SentimentError: LocalizedError {
+    case modelLoadingFailed
+    case textClassificationFailed
+    
+    var errorDescription: String? {
+        switch self {
+        case .modelLoadingFailed:
+            return "Failed to load the sentiment analysis model."
+        case .textClassificationFailed:
+            return "Failed to classify the provided text."
+        }
+    }
+}
+
+@Observable
+class SentimentViewModel {
+    var predictedSentiment: String = "Unknown"  // Automatically observed state
     
     private var model: NLModel?
 
@@ -129,13 +161,16 @@ class SentimentViewModel: ObservableObject {
             let mlModel = try SentimentAnalysis(configuration: MLModelConfiguration()).model
             self.model = try NLModel(mlModel: mlModel)
         } catch {
-            print("Failed to load SentimentAnalysis model: \(error)")
+            print(SentimentError.modelLoadingFailed.localizedDescription)
         }
     }
 
     /// Predicts the sentiment for the given text
     func classifyText(_ text: String) {
-        guard let model = model else { return }
+        guard let model = model else {
+            print(SentimentError.modelLoadingFailed.localizedDescription)
+            return
+        }
         
         // Use NLModel to classify the input text
         if let sentiment = model.predictedLabel(for: text) {
@@ -143,8 +178,9 @@ class SentimentViewModel: ObservableObject {
                 self.predictedSentiment = sentiment
             }
         } else {
-            print("Failed to classify text.")
+            print(SentimentError.textClassificationFailed.localizedDescription)
         }
     }
 }
+
 ```

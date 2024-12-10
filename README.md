@@ -100,3 +100,51 @@ class ClassifierViewModel: ObservableObject {
     }
 }
 ```
+
+## Text Classification ViewModel Example (Using `SentimentAnalysis.mlmodel`)
+
+Here’s an example of how to create a **ViewModel** for text classification using a CoreML model named `SentimentAnalysis.mlmodel`. This ViewModel will load the model, make predictions on text inputs, and update the prediction result.
+
+---
+
+### **1. ViewModel for Text Classification**
+
+```swift
+import SwiftUI
+import CoreML
+import NaturalLanguage
+
+class SentimentViewModel: ObservableObject {
+    @Published var predictedSentiment: String = "Unknown"
+    
+    private var model: NLModel?
+
+    init() {
+        loadModel()
+    }
+    
+    /// Loads the SentimentAnalysis model
+    private func loadModel() {
+        do {
+            let mlModel = try SentimentAnalysis(configuration: MLModelConfiguration()).model
+            self.model = try NLModel(mlModel: mlModel)
+        } catch {
+            print("Failed to load SentimentAnalysis model: \(error)")
+        }
+    }
+
+    /// Predicts the sentiment for the given text
+    func classifyText(_ text: String) {
+        guard let model = model else { return }
+        
+        // Use NLModel to classify the input text
+        if let sentiment = model.predictedLabel(for: text) {
+            DispatchQueue.main.async {
+                self.predictedSentiment = sentiment
+            }
+        } else {
+            print("Failed to classify text.")
+        }
+    }
+}
+```

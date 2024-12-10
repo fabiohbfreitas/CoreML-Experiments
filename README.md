@@ -39,3 +39,64 @@ CoreML is a machine learning framework for Apple platforms (iOS, macOS, watchOS,
 - **CreateML**: A macOS app and framework used to create, train, and evaluate machine learning models with a simple, no-code or low-code approach. It's user-friendly, supports visual tools, and is ideal for developers new to ML.  
 - **CoreML**: A framework for integrating trained ML models into iOS, iPadOS, macOS, watchOS, and tvOS apps. CoreML runs models on-device, offering fast, efficient inference with low latency and privacy protection. It consumes models trained with CreateML, TensorFlow, PyTorch, and other ML tools.  
 
+## How to Integrate and Use CoreML in an iOS App Using SwiftUI
+
+To use a CoreML model in a SwiftUI app, you'll need to load the model, make predictions, and update the UI accordingly. Below is a step-by-step guide with best practices.
+
+### 1. **Add the CoreML Model to the Project**
+1. Drag and drop the `EmotionsImageClassifier.mlmodel` file into your Xcode project.  
+2. Xcode will automatically generate a Swift class for the model (e.g., `EmotionsImageClassifier`).  
+
+---
+
+### 2. **Create a ViewModel for ML Predictions**
+It’s best to keep ML logic separate from the UI. We’ll create a `ClassifierViewModel` to handle model predictions.
+
+```swift
+import SwiftUI
+import CoreML
+import Vision
+
+class ClassifierViewModel: ObservableObject {
+    @Published var predictedEmotion: String = "Unknown"
+    
+    private var model: VNCoreMLModel?
+
+    init() {
+        // Load the CoreML model into a Vision model for better flexibility
+        do {
+            let mlModel = try EmotionsImageClassifier(configuration: MLModelConfiguration()).model
+            self.model = try VNCoreMLModel(for: mlModel)
+        } catch {
+            print("Failed to load ML model: \(error)")
+        }
+    }
+
+    /// Classifies an image and updates the `predictedEmotion`
+    func classifyImage(_ image: UIImage) {
+        guard let model = model else { return }
+        
+        guard let ciImage = CIImage(image: image) else {
+            print("Unable to convert UIImage to CIImage")
+            return
+        }
+
+        let request = VNCoreMLRequest(model: model) { [weak self] request, error in
+            if let results = request.results as? [VNClassificationObservation], let topResult = results.first {
+                DispatchQueue.main.async {
+                    self?.predictedEmotion = topResult.identifier
+                }
+            } else if let error = error {
+                print("Classification error: \(error)")
+            }
+        }
+
+        let handler = VNImageRequestHandler(ciImage: ciImage, options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            print("Failed to perform image request: \(error)")
+        }
+    }
+}
+```
